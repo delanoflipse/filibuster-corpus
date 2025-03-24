@@ -1,74 +1,278 @@
 version: '3'
 
 services:
+    # system services
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:latest
+        command: --config=/otel-config.yaml
+        volumes:
+            - ../config/otel-collector/otel-config.yaml:/otel-config.yaml
+        depends_on:
+            - jaeger
+            - orchestrator
+
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - 8686:16686
+        environment:
+            - COLLECTOR_OTLP_ENABLED=true
+
+    orchestrator:
+        image: fit-otel-orchestrator:latest
+        ports:
+            - "6050:5000"
+        environment:
+            - PROXY_LIST=api-gateway:8050,bookmarks:8050,telemetry:8050,trending:8050,my-list:8050,user-recommendations:8050,global-recommendations:8050,ratings:8050,user-profile:8050
+
+    # services
     mobile-client:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:mobile-client
-        build: 
-            context: './services/mobile-client'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: mobile-client
         ports:
             - "5000:5000"
-    api-gateway:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:api-gateway
-        build: 
-            context: './services/api-gateway'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=mobile-client
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    api-gateway-proxy:
+        image: fit-proxy:latest
+        hostname: api-gateway
+        environment:
+            - PROXY_HOST=0.0.0.0:5001
+            - PROXY_TARGET=http://api-gateway-real:5001
+            - SERVICE_NAME=api-gateway
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    api-gateway-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: api-gateway
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=api-gateway
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5001:5001"
-    bookmarks:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:bookmarks
-        build: 
-            context: './services/bookmarks'
-            dockerfile: './Dockerfile'
+
+    bookmarks-proxy:
+        image: fit-proxy:latest
+        hostname: bookmarks
+        environment:
+            - PROXY_HOST=0.0.0.0:5003
+            - PROXY_TARGET=http://bookmarks-real:5003
+            - SERVICE_NAME=bookmarks
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    bookmarks-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: bookmarks
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=bookmarks
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5003:5003"
-    telemetry:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:telemetry
-        build: 
-            context: './services/telemetry'
-            dockerfile: './Dockerfile'
+
+    telemetry-proxy:
+        image: fit-proxy:latest
+        hostname: telemetry
+        environment:
+            - PROXY_HOST=0.0.0.0:5004
+            - PROXY_TARGET=http://telemetry-real:5004
+            - SERVICE_NAME=telemetry
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    telemetry-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: telemetry
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=telemetry
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5004:5004"
-    trending:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:trending
-        build: 
-            context: './services/trending'
-            dockerfile: './Dockerfile'
+
+    trending-proxy:
+        image: fit-proxy:latest
+        hostname: trending
+        environment:
+            - PROXY_HOST=0.0.0.0:5005
+            - PROXY_TARGET=http://trending-real:5005
+            - SERVICE_NAME=trending
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    trending-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: trending
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=trending
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5005:5005"
-    my-list:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:my-list
-        build: 
-            context: './services/my-list'
-            dockerfile: './Dockerfile'
+
+    my-list-proxy:
+        image: fit-proxy:latest
+        hostname: my-list
+        environment:
+            - PROXY_HOST=0.0.0.0:5006
+            - PROXY_TARGET=http://my-list-real:5006
+            - SERVICE_NAME=my-list
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    my-list-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: my-list
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=my-list
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5006:5006"
-    user-recommendations:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:user-recommendations
-        build: 
-            context: './services/user-recommendations'
-            dockerfile: './Dockerfile'
+
+    user-recommendations-proxy:
+        image: fit-proxy:latest
+        hostname: user-recommendations
+        environment:
+            - PROXY_HOST=0.0.0.0:5007
+            - PROXY_TARGET=http://user-recommendations-real:5007
+            - SERVICE_NAME=user-recommendations
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    user-recommendations-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: user-recommendations
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=user-recommendations
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5007:5007"
-    global-recommendations:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:global-recommendations
-        build: 
-            context: './services/global-recommendations'
-            dockerfile: './Dockerfile'
+
+    global-recommendations-proxy:
+        image: fit-proxy:latest
+        hostname: global-recommendations
+        environment:
+            - PROXY_HOST=0.0.0.0:5008
+            - PROXY_TARGET=http://global-recommendations-real:5008
+            - SERVICE_NAME=global-recommendations
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    global-recommendations-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: global-recommendations
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=global-recommendations
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5008:5008"
-    ratings:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:ratings
-        build: 
-            context: './services/ratings'
-            dockerfile: './Dockerfile'
+
+    ratings-proxy:
+        image: fit-proxy:latest
+        hostname: ratings
+        environment:
+            - PROXY_HOST=0.0.0.0:5009
+            - PROXY_TARGET=http://ratings-real:5009
+            - SERVICE_NAME=ratings
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    ratings-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: ratings
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=ratings
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5009:5009"
-    user-profile:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:user-profile
-        build: 
-            context: './services/user-profile'
-            dockerfile: './Dockerfile'
+
+    user-profile-proxy:
+        image: fit-proxy:latest
+        hostname: user-profile
+        environment:
+            - PROXY_HOST=0.0.0.0:5010
+            - PROXY_TARGET=http://user-profile-real:5010
+            - SERVICE_NAME=user-profile
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    user-profile-real:
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: netflix
+                service: user-profile
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=user-profile
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
         ports:
             - "5010:5010"
-

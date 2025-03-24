@@ -1,66 +1,258 @@
-version: '3'
-
 services:
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:latest
+        command: --config=/otel-config.yaml
+        volumes:
+            - ../config/otel-collector/otel-config.yaml:/otel-config.yaml
+        depends_on:
+            - jaeger
+            - orchestrator
+
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - 8686:16686
+        environment:
+            - COLLECTOR_OTLP_ENABLED=true
+
+    orchestrator:
+        image: fit-otel-orchestrator:latest
+        ports:
+            - "6050:5000"
+        environment:
+            - PROXY_LIST=content-delivery-engine:8050,content-delivery-service:8050,audible-download-service:8050,ownership:8050,activation:8050,stats:8050,asset-metadata:8050,audio-assets:8050
     audible-app:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-app
-        build: 
-            context: './services/audible-app'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: audible-app
         ports:
             - "5000:5000"
-    content-delivery-engine:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-engine
-        build: 
-            context: './services/content-delivery-engine'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=audible-app
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    content-delivery-engine-proxy:
+        image: fit-proxy:latest
+        hostname: content-delivery-engine
+        environment:
+            - PROXY_HOST=0.0.0.0:5001
+            - PROXY_TARGET=http://content-delivery-engine-real:5001
+            - SERVICE_NAME=content-delivery-engine
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+
+    content-delivery-engine-real:
+        hostname: content-delivery-engine-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: content-delivery-engine
         ports:
             - "5001:5001"
-    content-delivery-service:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-service
-        build: 
-            context: './services/content-delivery-service'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=content-delivery-engine
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    content-delivery-service-proxy:
+        image: fit-proxy:latest
+        hostname: content-delivery-service
+        environment:
+            - PROXY_HOST=0.0.0.0:5002
+            - PROXY_TARGET=http://content-delivery-service-real:5002
+            - SERVICE_NAME=content-delivery-service
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    content-delivery-service-real:
+        hostname: content-delivery-service-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: content-delivery-service
         ports:
             - "5002:5002"
-    audible-download-service:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-download-service
-        build: 
-            context: './services/audible-download-service'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=content-delivery-service
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    audible-download-service-proxy:
+        image: fit-proxy:latest
+        hostname: audible-download-service
+        environment:
+            - PROXY_HOST=0.0.0.0:5003
+            - PROXY_TARGET=http://audible-download-service-real:5003
+            - SERVICE_NAME=audible-download-service
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    audible-download-service-real:
+        hostname: audible-download-service-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: audible-download-service
         ports:
             - "5003:5003"
-    ownership:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:ownership
-        build: 
-            context: './services/ownership'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=audible-download-service
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    ownership-proxy:
+        image: fit-proxy:latest
+        hostname: ownership
+        environment:
+            - PROXY_HOST=0.0.0.0:5004
+            - PROXY_TARGET=http://ownership-real:5004
+            - SERVICE_NAME=ownership
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    ownership-real:
+        hostname: ownership-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: ownership
         ports:
             - "5004:5004"
-    activation:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:activation
-        build: 
-            context: './services/activation'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=ownership
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    activation-proxy:
+        image: fit-proxy:latest
+        hostname: activation
+        environment:
+            - PROXY_HOST=0.0.0.0:5005
+            - PROXY_TARGET=http://activation-real:5005
+            - SERVICE_NAME=activation
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    activation-real:
+        hostname: activation-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: activation
+
         ports:
             - "5005:5005"
-    stats:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:stats
-        build: 
-            context: './services/stats'
-            dockerfile: './Dockerfile'
+
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=activation
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    stats-proxy:
+        image: fit-proxy:latest
+        hostname: stats
+        environment:
+            - PROXY_HOST=0.0.0.0:5006
+            - PROXY_TARGET=http://stats-real:5006
+            - SERVICE_NAME=stats
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    stats-real:
+        hostname: stats-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: stats
         ports:
             - "5006:5006"
-    asset-metadata:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:asset-metadata
-        build: 
-            context: './services/asset-metadata'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=stats
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+
+    asset-metadata-proxy:
+        image: fit-proxy:latest
+        hostname: asset-metadata
+        environment:
+            - PROXY_HOST=0.0.0.0:5007
+            - PROXY_TARGET=http://asset-metadata-real:5007
+            - SERVICE_NAME=asset-metadata
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+
+    asset-metadata-real:
+        hostname: asset-metadata-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: asset-metadata
         ports:
             - "5007:5007"
-    audio-assets:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audio-assets
-        build: 
-            context: './services/audio-assets'
-            dockerfile: './Dockerfile'
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=asset-metadata
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    audio-assets-proxy:
+        image: fit-proxy:latest
+        hostname: audio-assets
+        environment:
+            - PROXY_HOST=0.0.0.0:5008
+            - PROXY_TARGET=http://audio-assets-real:5008
+            - SERVICE_NAME=audio-assets
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+    audio-assets-real:
+        hostname: audio-assets-real
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: audible
+                service: audio-assets
         ports:
             - "5008:5008"
+        environment:
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+            - OTEL_SERVICE_NAME=audio-assets
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317

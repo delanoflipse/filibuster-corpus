@@ -3,10 +3,10 @@ import json
 import subprocess
 import ast
 
+
 class Helper:
     def __init__(self, example):
-        self.example_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), example)
-        with open("{}/networking.json".format(self.example_path), "r") as f:
+        with open("/app/networking.json", "r") as f:
             self.networking = json.load(f)
         self.instrumentation_info = None
 
@@ -20,21 +20,25 @@ class Helper:
     def get_service_url(self, service_name):
         if os.environ.get('USE_MINIKUBE_NETWORKING', ''):
             cmd = 'minikube service {} --url'.format(service_name)
-            out = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            out = subprocess.Popen(
+                cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             try:
-                stdout,stderr = out.communicate(timeout=10)
+                stdout, stderr = out.communicate(timeout=10)
             except subprocess.TimeoutExpired as e:
                 print(e)
-                raise Exception('Minikube unresponsive, try running command \'{}\' to debug.'.format(cmd))
+                raise Exception(
+                    'Minikube unresponsive, try running command \'{}\' to debug.'.format(cmd))
             return stdout.decode('ascii').rstrip()
         elif os.environ.get('USE_EKS_NETWORKING', ''):
             cmd = 'kubectl get service/{} -o json'.format(service_name)
-            out = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            out = subprocess.Popen(
+                cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             try:
-                stdout,stderr = out.communicate(timeout=10)
+                stdout, stderr = out.communicate(timeout=10)
             except subprocess.TimeoutExpired as e:
                 print(e)
-                raise Exception('k8s unresponsive, try running command \'{}\' to debug.'.format(cmd))
+                raise Exception(
+                    'k8s unresponsive, try running command \'{}\' to debug.'.format(cmd))
             info = json.loads(stdout)
             host_name = info['status']['loadBalancer']['ingress'][0]['hostname']
             return "http://{}:{}".format(host_name, self.get_port(service_name))
