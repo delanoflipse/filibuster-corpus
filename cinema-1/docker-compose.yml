@@ -2,31 +2,38 @@ version: '3'
 
 services:
     movies:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-1:movies
-        build: 
-            context: './services/movies/'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: cinema-1
+                service: movies
         ports:
             - "5001:5001"
     showtimes:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-1:showtimes
-        build: 
-            context: './services/showtimes'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: cinema-1
+                service: showtimes
         ports:
             - "5002:5002"
     bookings:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-1:bookings
-        build: 
-            context: './services/bookings'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: cinema-1
+                service: bookings
         ports:
             - "5003:5003"
     users:
-        image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-1:users
-        build: 
-            context: './services/users'
-            dockerfile: './Dockerfile'
+        build:
+            context: '../'
+            dockerfile: './Dockerfile.python.service'
+            args:
+                benchmark: cinema-1
+                service: users
         ports:
             - "5000:5000"
-
