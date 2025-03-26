@@ -20,16 +20,26 @@ services:
         ports:
             - "6050:5000"
         environment:
-            - PROXY_LIST=content-delivery-engine:8050,content-delivery-service:8050,audible-download-service:8050,ownership:8050,activation:8050,stats:8050,asset-metadata:8050,audio-assets:8050
-    audible-app:
+            - PROXY_LIST=content-delivery-engine:8050,content-delivery-service:8050,audible-download-service:8050,ownership:8050,activation:8050,stats:8050,asset-metadata:8050,audio-assets:8050,audible-app:8050
+
+    audible-app-proxy:
+        image: fit-proxy:latest
+        hostname: audible-app
+        environment:
+            - PROXY_HOST=0.0.0.0:5000
+            - PROXY_TARGET=http://audible-app-real:5000
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+        ports:
+            - "5000:5000"
+
+    audible-app-real:
         build:
             context: '../'
             dockerfile: './Dockerfile.python.service'
             args:
                 benchmark: audible
                 service: audible-app
-        ports:
-            - "5000:5000"
         environment:
             - FLASK_DEBUG=1
             - RUNNING_IN_DOCKER=1
@@ -44,7 +54,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5001
             - PROXY_TARGET=http://content-delivery-engine-real:5001
-            - SERVICE_NAME=content-delivery-engine
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
 
@@ -72,7 +81,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5002
             - PROXY_TARGET=http://content-delivery-service-real:5002
-            - SERVICE_NAME=content-delivery-service
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     content-delivery-service-real:
@@ -99,7 +107,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5003
             - PROXY_TARGET=http://audible-download-service-real:5003
-            - SERVICE_NAME=audible-download-service
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     audible-download-service-real:
@@ -126,7 +133,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5004
             - PROXY_TARGET=http://ownership-real:5004
-            - SERVICE_NAME=ownership
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     ownership-real:
@@ -153,7 +159,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5005
             - PROXY_TARGET=http://activation-real:5005
-            - SERVICE_NAME=activation
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     activation-real:
@@ -182,7 +187,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5006
             - PROXY_TARGET=http://stats-real:5006
-            - SERVICE_NAME=stats
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     stats-real:
@@ -209,7 +213,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5007
             - PROXY_TARGET=http://asset-metadata-real:5007
-            - SERVICE_NAME=asset-metadata
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
 
@@ -236,7 +239,6 @@ services:
         environment:
             - PROXY_HOST=0.0.0.0:5008
             - PROXY_TARGET=http://audio-assets-real:5008
-            - SERVICE_NAME=audio-assets
             - ORCHESTRATOR_HOST=orchestrator:5000
             - CONTROLLER_PORT=8050
     audio-assets-real:

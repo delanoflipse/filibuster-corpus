@@ -6,7 +6,7 @@ services:
             context: '../'
             dockerfile: './Dockerfile.python.service'
             args:
-                benchmark: cinema-2
+                benchmark: cinema-1
                 service: movies
         ports:
             - "5001:5001"
@@ -15,7 +15,7 @@ services:
             context: '../'
             dockerfile: './Dockerfile.python.service'
             args:
-                benchmark: cinema-2
+                benchmark: cinema-1
                 service: showtimes
         ports:
             - "5002:5002"
@@ -24,7 +24,7 @@ services:
             context: '../'
             dockerfile: './Dockerfile.python.service'
             args:
-                benchmark: cinema-2
+                benchmark: cinema-1
                 service: bookings
         ports:
             - "5003:5003"
@@ -33,7 +33,7 @@ services:
             context: '../'
             dockerfile: './Dockerfile.python.service'
             args:
-                benchmark: cinema-2
+                benchmark: cinema-1
                 service: users
         ports:
             - "5000:5000"
