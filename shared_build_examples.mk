@@ -66,7 +66,7 @@ refresh-aws-credentials:
         echo "Not refreshing credentials, running inside AWS."; \
     fi
 
-docker-build: refresh-aws-credentials generate-protos
+docker-build: generate-protos
 	docker build --build-arg example=$(example) --build-arg disable_instrumentation=$(DISABLE_INSTRUMENTATION) --build-arg disable_server_communication=$(DISABLE_SERVER_COMMUNICATION) --build-arg run_counterexample=$(RUN_COUNTEREXAMPLE) -t $(example):configuration -f ../Dockerfile ..
 	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose build
 	docker pull jaegertracing/all-in-one:1.6
@@ -96,7 +96,7 @@ generate-protos:
 	@echo "Generating protocol buffer files..."
 	if [ -d "protos/" ]; then \
 		mkdir -p protos/out; \
-		python3 -m grpc_tools.protoc -I./protos --python_out=protos/out --grpc_python_out=protos/out ./protos/*.proto; \
+		python -m grpc_tools.protoc -I./protos --python_out=protos/out --grpc_python_out=protos/out ./protos/*.proto; \
 		make install-protos; \
 	fi
 

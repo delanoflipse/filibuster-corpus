@@ -60,8 +60,8 @@
     "timeout-seconds": 15
   },
   "filibuster": {
-    "port": 5011,
-    "docker-host": "filibuster",
+    "port": 5050,
+    "docker-host": "host.docker.internal",
     "default-host": "0.0.0.0",
     "timeout-seconds": 15
   }

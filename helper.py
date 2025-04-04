@@ -12,7 +12,7 @@ class Helper:
 
     def get_debug(self):
         # Debug has to be false to prevent multiprocess problem that inhibits coverage metrics.
-        return False
+        return os.environ.get('FLASK_DEBUG', '0') == "1"
 
     def resolve_with_docker_host(self, service_name):
         return os.environ.get('RUNNING_IN_DOCKER', '')

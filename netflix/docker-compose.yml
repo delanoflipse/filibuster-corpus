@@ -8,6 +8,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     api-gateway:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:api-gateway
         build: 
@@ -15,6 +20,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     bookmarks:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:bookmarks
         build: 
@@ -22,6 +32,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5003:5003"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     telemetry:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:telemetry
         build: 
@@ -29,6 +44,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5004:5004"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     trending:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:trending
         build: 
@@ -36,6 +56,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5005:5005"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     my-list:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:my-list
         build: 
@@ -43,6 +68,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5006:5006"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     user-recommendations:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:user-recommendations
         build: 
@@ -50,6 +80,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5007:5007"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     global-recommendations:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:global-recommendations
         build: 
@@ -57,6 +92,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5008:5008"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     ratings:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:ratings
         build: 
@@ -64,6 +104,11 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5009:5009"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
     user-profile:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/netflix:user-profile
         build: 
@@ -71,4 +116,13 @@ services:
             dockerfile: './Dockerfile'
         ports:
             - "5010:5010"
+        environment:
+            - DEBUG=1
+            - FLASK_DEBUG=1
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
 
