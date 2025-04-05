@@ -1,0 +1,243 @@
+services:
+    audible-app-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5000
+            - PROXY_TARGET=http://audible-app-real:5000
+        hostname: audible-app
+        ports:
+            - 5000:5000
+    audible-app-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: audible-app
+        hostname: audible-app-real
+        environment:
+            - OTEL_SERVICE_NAME=audible-app
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    content-delivery-engine-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5001
+            - PROXY_TARGET=http://content-delivery-engine-real:5001
+        hostname: content-delivery-engine
+        ports:
+            - 5001:5001
+    content-delivery-engine-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: content-delivery-engine
+        hostname: content-delivery-engine-real
+        environment:
+            - OTEL_SERVICE_NAME=content-delivery-engine
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    content-delivery-service-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5002
+            - PROXY_TARGET=http://content-delivery-service-real:5002
+        hostname: content-delivery-service
+        ports:
+            - 5002:5002
+    content-delivery-service-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: content-delivery-service
+        hostname: content-delivery-service-real
+        environment:
+            - OTEL_SERVICE_NAME=content-delivery-service
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    audible-download-service-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5003
+            - PROXY_TARGET=http://audible-download-service-real:5003
+        hostname: audible-download-service
+        ports:
+            - 5003:5003
+    audible-download-service-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: audible-download-service
+        hostname: audible-download-service-real
+        environment:
+            - OTEL_SERVICE_NAME=audible-download-service
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    ownership-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5004
+            - PROXY_TARGET=http://ownership-real:5004
+        hostname: ownership
+        ports:
+            - 5004:5004
+    ownership-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: ownership
+        hostname: ownership-real
+        environment:
+            - OTEL_SERVICE_NAME=ownership
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    activation-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5005
+            - PROXY_TARGET=http://activation-real:5005
+        hostname: activation
+        ports:
+            - 5005:5005
+    activation-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: activation
+        hostname: activation-real
+        environment:
+            - OTEL_SERVICE_NAME=activation
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    stats-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5006
+            - PROXY_TARGET=http://stats-real:5006
+        hostname: stats
+        ports:
+            - 5006:5006
+    stats-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: stats
+        hostname: stats-real
+        environment:
+            - OTEL_SERVICE_NAME=stats
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    asset-metadata-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5007
+            - PROXY_TARGET=http://asset-metadata-real:5007
+        hostname: asset-metadata
+        ports:
+            - 5007:5007
+    asset-metadata-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: asset-metadata
+        hostname: asset-metadata-real
+        environment:
+            - OTEL_SERVICE_NAME=asset-metadata
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    audio-assets-proxy:
+        image: fit-proxy:latest
+        environment:
+            - ORCHESTRATOR_HOST=orchestrator:5000
+            - CONTROLLER_PORT=8050
+            - PROXY_HOST=0.0.0.0:5008
+            - PROXY_TARGET=http://audio-assets-real:5008
+        hostname: audio-assets
+        ports:
+            - 5008:5008
+    audio-assets-real:
+        build:
+            context: ../
+            dockerfile: ./Dockerfile.python.service
+            args:
+                benchmark: audible
+                service: audio-assets
+        hostname: audio-assets-real
+        environment:
+            - OTEL_SERVICE_NAME=audio-assets
+            - OTEL_TRACES_EXPORTER=otlp
+            - OTEL_BSP_SCHEDULE_DELAY=1
+            - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+            - FLASK_DEBUG=1
+            - RUNNING_IN_DOCKER=1
+    otel-collector:
+        image: otel/opentelemetry-collector-contrib:latest
+        command: --config=/etc/otel-collector-config.yaml
+        volumes:
+            - ../config/otel-collector/otel-config.yaml:/etc/otel-collector-config.yaml
+    jaeger:
+        image: jaegertracing/jaeger:latest
+        ports:
+            - 16686:16686
+        environment:
+            - COLLECTOR_OTLP_ENABLED=true
+    orchestrator:
+        image: fit-otel-orchestrator:latest
+        ports:
+            - 6050:5000
+        environment:
+            - PROXY_LIST=audible-app:8050,content-delivery-engine:8050,content-delivery-service:8050,audible-download-service:8050,ownership:8050,activation:8050,stats:8050,asset-metadata:8050,audio-assets:8050
