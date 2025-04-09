@@ -4,6 +4,7 @@ services:
     environment:
     - ORCHESTRATOR_HOST=orchestrator:5000
     - CONTROLLER_PORT=8050
+    - SERVICE_NAME=movies
     - PROXY_HOST=0.0.0.0:5001
     - PROXY_TARGET=http://movies-real:5001
     hostname: movies
@@ -29,6 +30,7 @@ services:
     environment:
     - ORCHESTRATOR_HOST=orchestrator:5000
     - CONTROLLER_PORT=8050
+    - SERVICE_NAME=showtimes
     - PROXY_HOST=0.0.0.0:5002
     - PROXY_TARGET=http://showtimes-real:5002
     hostname: showtimes
@@ -54,6 +56,7 @@ services:
     environment:
     - ORCHESTRATOR_HOST=orchestrator:5000
     - CONTROLLER_PORT=8050
+    - SERVICE_NAME=bookings
     - PROXY_HOST=0.0.0.0:5003
     - PROXY_TARGET=http://bookings-real:5003
     hostname: bookings
@@ -79,6 +82,7 @@ services:
     environment:
     - ORCHESTRATOR_HOST=orchestrator:5000
     - CONTROLLER_PORT=8050
+    - SERVICE_NAME=users
     - PROXY_HOST=0.0.0.0:5000
     - PROXY_TARGET=http://users-real:5000
     hostname: users
