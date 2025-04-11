@@ -21,8 +21,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=mobile-client
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   api-gateway-proxy:
@@ -47,8 +46,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=api-gateway
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   bookmarks-proxy:
@@ -73,8 +71,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=bookmarks
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   telemetry-proxy:
@@ -99,8 +96,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=telemetry
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   trending-proxy:
@@ -125,8 +121,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=trending
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   my-list-proxy:
@@ -151,8 +146,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=my-list
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   user-recommendations-proxy:
@@ -177,8 +171,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=user-recommendations
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   global-recommendations-proxy:
@@ -203,8 +196,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=global-recommendations
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   ratings-proxy:
@@ -229,8 +221,7 @@ services:
     environment:
     - OTEL_SERVICE_NAME=ratings
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   user-profile-proxy:
@@ -255,15 +246,9 @@ services:
     environment:
     - OTEL_SERVICE_NAME=user-profile
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: --config=/etc/otel-collector-config.yaml
-    volumes:
-    - ../config/otel-collector/otel-config.yaml:/etc/otel-collector-config.yaml
   jaeger:
     image: jaegertracing/jaeger:latest
     ports:
@@ -271,7 +256,7 @@ services:
     environment:
     - COLLECTOR_OTLP_ENABLED=true
   orchestrator:
-    image: fit-otel-orchestrator:latest
+    image: fit-orchestrator:latest
     ports:
     - 6050:5000
     environment:
