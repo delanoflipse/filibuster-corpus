@@ -1,4 +1,9 @@
 Flask==1.0.0
+Jinja2==3.0.1
+Werkzeug==2.2.2
+itsdangerous==2.0.1
+protobuf<3.20
+urllib3<2
 pytest
 requests
 opentelemetry-sdk==1.0.0rc1
