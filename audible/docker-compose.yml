@@ -1,8 +1,15 @@
 version: '3'
 
 services:
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
+
     audible-app:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-app
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/audible-app'
             dockerfile: './Dockerfile'
@@ -10,10 +17,10 @@ services:
             - "5000:5000"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     content-delivery-engine:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-engine
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/content-delivery-engine'
             dockerfile: './Dockerfile'
@@ -21,10 +28,10 @@ services:
             - "5001:5001"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     content-delivery-service:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-service
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/content-delivery-service'
             dockerfile: './Dockerfile'
@@ -32,10 +39,10 @@ services:
             - "5002:5002"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     audible-download-service:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-download-service
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/audible-download-service'
             dockerfile: './Dockerfile'
@@ -43,10 +50,10 @@ services:
             - "5003:5003"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     ownership:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:ownership
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/ownership'
             dockerfile: './Dockerfile'
@@ -54,10 +61,10 @@ services:
             - "5004:5004"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     activation:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:activation
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/activation'
             dockerfile: './Dockerfile'
@@ -65,8 +72,6 @@ services:
             - "5005:5005"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     stats:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:stats
         build:
@@ -77,9 +82,11 @@ services:
         environment:
             - FLASK_DEBUG=1
         extra_hosts:
-        - "host.docker.internal:host-gateway"
+            - "host.docker.internal:host-gateway"
     asset-metadata:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:asset-metadata
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/asset-metadata'
             dockerfile: './Dockerfile'
@@ -87,10 +94,10 @@ services:
             - "5007:5007"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
     audio-assets:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audio-assets
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
         build:
             context: './services/audio-assets'
             dockerfile: './Dockerfile'
@@ -98,9 +105,3 @@ services:
             - "5008:5008"
         environment:
             - FLASK_DEBUG=1
-        extra_hosts:
-        - "host.docker.internal:host-gateway"
-    jaeger:
-        image: jaegertracing/all-in-one:latest
-        ports:
-            - "16686:16686"

@@ -1,6 +1,11 @@
 version: '3'
 
 services:
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
+
     movies:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-6:movies
         build:
@@ -10,30 +15,37 @@ services:
             - "5001:5001"
     showtimes:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-6:showtimes
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/showtimes'
             dockerfile: './Dockerfile'
         ports:
             - "5002:5002"
     bookings-primary:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-6:bookings-primary
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/bookings-primary'
             dockerfile: './Dockerfile'
         ports:
             - "5003:5003"
     bookings-secondary:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-6:bookings-secondary
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/bookings-secondary'
             dockerfile: './Dockerfile'
         ports:
             - "5004:5004"
     users:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-6:users
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/users'
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
-

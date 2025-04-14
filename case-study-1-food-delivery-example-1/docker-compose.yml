@@ -1,19 +1,26 @@
 version: '3'
 
 services:
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
+
     orders:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-1-food-delivery-example-1:orders
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/orders/'
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
     auth:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-1-food-delivery-example-1:auth
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        build:
             context: './services/auth'
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
-
-
