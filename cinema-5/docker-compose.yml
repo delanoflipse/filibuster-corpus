@@ -10,6 +10,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-5:movies
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/movies/'
             dockerfile: './Dockerfile'
@@ -19,6 +22,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-5:showtimes
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/showtimes'
             dockerfile: './Dockerfile'
@@ -28,6 +34,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-5:bookings
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/bookings'
             dockerfile: './Dockerfile'
@@ -37,6 +46,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-5:users
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/users'
             dockerfile: './Dockerfile'

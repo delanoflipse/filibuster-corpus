@@ -10,6 +10,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/expedia:api-gateway
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/api-gateway/'
             dockerfile: './Dockerfile'
@@ -19,6 +22,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/expedia:review-ml
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/review-ml'
             dockerfile: './Dockerfile'
@@ -28,6 +34,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/expedia:review-time
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/review-time'
             dockerfile: './Dockerfile'

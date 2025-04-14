@@ -10,47 +10,51 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-3:movies
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/movies/'
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
-        environment:
-            - DEBUG=1
-            - FLASK_DEBUG=1
+
     showtimes:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-3:showtimes
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/showtimes'
             dockerfile: './Dockerfile'
         ports:
             - "5002:5002"
-        environment:
-            - DEBUG=1
-            - FLASK_DEBUG=1
+
     bookings:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-3:bookings
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/bookings'
             dockerfile: './Dockerfile'
         ports:
             - "5003:5003"
-        environment:
-            - DEBUG=1
-            - FLASK_DEBUG=1
+
     users:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-3:users
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/users'
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
-        environment:
-            - DEBUG=1
-            - FLASK_DEBUG=1
+

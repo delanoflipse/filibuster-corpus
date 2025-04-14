@@ -71,9 +71,6 @@ docker-build: generate-protos
 	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose build
 	docker pull jaegertracing/all-in-one:1.6
 
-docker-build:
-	DISABLE_INSTRUMENTATION=$(DISABLE_INSTRUMENTATION) make docker-build
-
 docker-start:
 	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose up -d
 

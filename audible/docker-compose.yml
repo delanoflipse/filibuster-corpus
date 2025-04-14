@@ -10,98 +10,116 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-app
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/audible-app'
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
-        environment:
-            - FLASK_DEBUG=1
+
     content-delivery-engine:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-engine
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/content-delivery-engine'
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
-        environment:
-            - FLASK_DEBUG=1
+
     content-delivery-service:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:content-delivery-service
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/content-delivery-service'
             dockerfile: './Dockerfile'
         ports:
             - "5002:5002"
-        environment:
-            - FLASK_DEBUG=1
+
     audible-download-service:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audible-download-service
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/audible-download-service'
             dockerfile: './Dockerfile'
         ports:
             - "5003:5003"
-        environment:
-            - FLASK_DEBUG=1
+
     ownership:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:ownership
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/ownership'
             dockerfile: './Dockerfile'
         ports:
             - "5004:5004"
-        environment:
-            - FLASK_DEBUG=1
+
     activation:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:activation
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/activation'
             dockerfile: './Dockerfile'
         ports:
             - "5005:5005"
-        environment:
-            - FLASK_DEBUG=1
+
     stats:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:stats
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/stats'
             dockerfile: './Dockerfile'
         ports:
             - "5006:5006"
-        environment:
-            - FLASK_DEBUG=1
+
         extra_hosts:
             - "host.docker.internal:host-gateway"
     asset-metadata:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:asset-metadata
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/asset-metadata'
             dockerfile: './Dockerfile'
         ports:
             - "5007:5007"
-        environment:
-            - FLASK_DEBUG=1
+
     audio-assets:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/audible:audio-assets
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/audio-assets'
             dockerfile: './Dockerfile'
         ports:
             - "5008:5008"
-        environment:
-            - FLASK_DEBUG=1
+

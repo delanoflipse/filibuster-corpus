@@ -10,6 +10,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-1-food-delivery-example-2:orders
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/orders/'
             dockerfile: './Dockerfile'
@@ -19,6 +22,9 @@ services:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-1-food-delivery-example-2:auth
         extra_hosts:
             - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
         build:
             context: './services/auth'
             dockerfile: './Dockerfile'
