@@ -15,7 +15,7 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-1
+        benchmark: cinema-3
         service: movies
     hostname: movies-real
     environment:
@@ -40,7 +40,7 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-1
+        benchmark: cinema-3
         service: showtimes
     hostname: showtimes-real
     environment:
@@ -65,7 +65,7 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-1
+        benchmark: cinema-3
         service: bookings
     hostname: bookings-real
     environment:
@@ -90,7 +90,7 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-1
+        benchmark: cinema-3
         service: users
     hostname: users-real
     environment:

@@ -15,14 +15,13 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-3
+        benchmark: cinema-2
         service: movies
     hostname: movies-real
     environment:
     - OTEL_SERVICE_NAME=movies
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   showtimes-proxy:
@@ -41,14 +40,13 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-3
+        benchmark: cinema-2
         service: showtimes
     hostname: showtimes-real
     environment:
     - OTEL_SERVICE_NAME=showtimes
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   bookings-proxy:
@@ -67,14 +65,13 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-3
+        benchmark: cinema-2
         service: bookings
     hostname: bookings-real
     environment:
     - OTEL_SERVICE_NAME=bookings
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
   users-proxy:
@@ -93,21 +90,15 @@ services:
       context: ../
       dockerfile: ./Dockerfile.python.service
       args:
-        benchmark: cinema-3
+        benchmark: cinema-2
         service: users
     hostname: users-real
     environment:
     - OTEL_SERVICE_NAME=users
     - OTEL_TRACES_EXPORTER=otlp
-    - OTEL_BSP_SCHEDULE_DELAY=1
-    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-  otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
-    command: --config=/etc/otel-collector-config.yaml
-    volumes:
-    - ../config/otel-collector/otel-config.yaml:/etc/otel-collector-config.yaml
   jaeger:
     image: jaegertracing/jaeger:latest
     ports:
@@ -115,7 +106,7 @@ services:
     environment:
     - COLLECTOR_OTLP_ENABLED=true
   orchestrator:
-    image: fit-otel-orchestrator:latest
+    image: fit-orchestrator:latest
     ports:
     - 6050:5000
     environment:
