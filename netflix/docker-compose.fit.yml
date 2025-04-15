@@ -24,7 +24,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   api-gateway-proxy:
     image: fit-proxy:latest
     environment:
@@ -50,7 +49,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   bookmarks-proxy:
     image: fit-proxy:latest
     environment:
@@ -76,7 +74,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   telemetry-proxy:
     image: fit-proxy:latest
     environment:
@@ -102,7 +99,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   trending-proxy:
     image: fit-proxy:latest
     environment:
@@ -128,7 +124,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   my-list-proxy:
     image: fit-proxy:latest
     environment:
@@ -154,7 +149,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   user-recommendations-proxy:
     image: fit-proxy:latest
     environment:
@@ -180,7 +174,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   global-recommendations-proxy:
     image: fit-proxy:latest
     environment:
@@ -206,7 +199,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   ratings-proxy:
     image: fit-proxy:latest
     environment:
@@ -232,7 +224,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   user-profile-proxy:
     image: fit-proxy:latest
     environment:
@@ -258,7 +249,6 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG=1
     - RUNNING_IN_DOCKER=1
-    - NETFLIX_FAULTS=1
   jaeger:
     image: jaegertracing/jaeger:latest
     ports:
