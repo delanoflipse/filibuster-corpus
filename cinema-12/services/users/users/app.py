@@ -1,3 +1,4 @@
+import helper
 from datetime import time
 
 from flask import Flask, jsonify
@@ -10,43 +11,11 @@ import sys
 
 app = Flask(__name__)
 
-examples_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
+examples_path = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
 sys.path.append(examples_path)
-import helper 
 helper = helper.Helper("cinema-12")
 
-## Start OpenTelemetry Configuration
-
-from opentelemetry import trace
-from opentelemetry.exporter import jaeger
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchExportSpanProcessor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-
-trace.set_tracer_provider(TracerProvider())
-
-jaeger_exporter = jaeger.JaegerSpanExporter(
-    service_name="users",
-    agent_host_name=helper.jaeger_agent_host_name(),
-    agent_port=helper.jaeger_agent_port()
-)
-
-trace.get_tracer_provider().add_span_processor(
-    BatchExportSpanProcessor(jaeger_exporter)
-)
-
-tracer = trace.get_tracer(__name__)
-
-sys.path.append(os.path.dirname(examples_path))
-from filibuster.instrumentation.requests import RequestsInstrumentor as FilibusterRequestsInstrumentor
-FilibusterRequestsInstrumentor().instrument(service_name="users", filibuster_url=helper.get_service_url('filibuster'))
-
-from filibuster.instrumentation.flask import FlaskInstrumentor as FilibusterFlaskInstrumentor
-FilibusterFlaskInstrumentor().instrument_app(app, service_name="users", filibuster_url=helper.get_service_url('filibuster'))
-
-RequestsInstrumentor().instrument()
-
-## End OpenTelemetry Configuration
 
 docker = os.environ.get('RUNNING_IN_DOCKER', '')
 
@@ -69,7 +38,7 @@ def hello():
 
 @app.route("/health-check", methods=['GET'])
 def users_health_check():
-    return jsonify({ "status": "OK" })
+    return jsonify({"status": "OK"})
 
 
 @app.route("/users", methods=['GET'])
@@ -99,11 +68,13 @@ def user_bookings(username):
     fallback = False
     try:
         users_bookings = requests.get("http://{}:{}/bookings/{}".format(helper.resolve_requests_host('bookings'),
-                                                                        helper.get_port('bookings'),
+                                                                        helper.get_port(
+                                                                            'bookings'),
                                                                         username),
                                       timeout=helper.get_timeout('bookings'))
     except requests.exceptions.ConnectionError:
-        time.sleep(10)  # Simulates some expensive computation that occurs in an error handling path.
+        # Simulates some expensive computation that occurs in an error handling path.
+        time.sleep(10)
         fallback = True
     except requests.exceptions.Timeout:
         fallback = True
@@ -121,7 +92,8 @@ def user_bookings(username):
             fallback = False
             try:
                 movies_resp = requests.get("http://{}:{}/movies/{}".format(helper.resolve_requests_host('movies'),
-                                                                           helper.get_port('movies'),
+                                                                           helper.get_port(
+                                                                               'movies'),
                                                                            movie_id),
                                            timeout=helper.get_timeout('movies'))
             except requests.exceptions.ConnectionError:
@@ -156,4 +128,5 @@ def user_suggested(username):
 
 
 if __name__ == "__main__":
-    app.run(port=helper.get_port('users'), host="0.0.0.0", debug=helper.get_debug(), threaded=True)
+    app.run(port=helper.get_port('users'), host="0.0.0.0",
+            debug=helper.get_debug(), threaded=True)

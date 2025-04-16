@@ -1,3 +1,4 @@
+import helper
 from flask import Flask, jsonify
 from werkzeug.exceptions import NotFound, ServiceUnavailable
 
@@ -8,48 +9,17 @@ import sys
 
 app = Flask(__name__)
 
-examples_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
+examples_path = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
 sys.path.append(examples_path)
-import helper 
 helper = helper.Helper("cinema-14")
 
-## Start OpenTelemetry Configuration
-
-from opentelemetry import trace
-from opentelemetry.exporter import jaeger
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchExportSpanProcessor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
-
-trace.set_tracer_provider(TracerProvider())
-
-jaeger_exporter = jaeger.JaegerSpanExporter(
-    service_name="users",
-    agent_host_name=helper.jaeger_agent_host_name(),
-    agent_port=helper.jaeger_agent_port()
-)
-
-trace.get_tracer_provider().add_span_processor(
-    BatchExportSpanProcessor(jaeger_exporter)
-)
-
-tracer = trace.get_tracer(__name__)
-
-sys.path.append(os.path.dirname(examples_path))
-from filibuster.instrumentation.requests import RequestsInstrumentor as FilibusterRequestsInstrumentor
-FilibusterRequestsInstrumentor().instrument(service_name="users", filibuster_url=helper.get_service_url('filibuster'))
-
-from filibuster.instrumentation.flask import FlaskInstrumentor as FilibusterFlaskInstrumentor
-FilibusterFlaskInstrumentor().instrument_app(app, service_name="users", filibuster_url=helper.get_service_url('filibuster'))
-
-RequestsInstrumentor().instrument()
-
-## End OpenTelemetry Configuration
 
 docker = os.environ.get('RUNNING_IN_DOCKER', '')
 
 with open("{}/cinema-14/services/users/users.json".format(examples_path), "r") as f:
     users = json.load(f)
+
 
 @app.route("/", methods=['GET'])
 def hello():
@@ -63,13 +33,16 @@ def hello():
         }
     })
 
+
 @app.route("/health-check", methods=['GET'])
 def users_health_check():
-    return jsonify({ "status": "OK" })
+    return jsonify({"status": "OK"})
+
 
 @app.route("/users", methods=['GET'])
 def users_list():
     return jsonify(users)
+
 
 @app.route("/users/<username>", methods=['GET'])
 def user_record(username):
@@ -77,6 +50,7 @@ def user_record(username):
         raise NotFound
 
     return jsonify(users[username])
+
 
 @app.route("/users/<username>/bookings", methods=['GET'])
 def user_bookings(username):
@@ -90,7 +64,8 @@ def user_bookings(username):
         raise NotFound("User '{}' not found.".format(username))
 
     try:
-        users_bookings = requests.get("http://{}:{}/bookings/{}".format(helper.resolve_requests_host('bookings'), helper.get_port('bookings'), username), timeout=helper.get_timeout('bookings'))
+        users_bookings = requests.get("http://{}:{}/bookings/{}".format(helper.resolve_requests_host(
+            'bookings'), helper.get_port('bookings'), username), timeout=helper.get_timeout('bookings'))
     except requests.exceptions.ConnectionError:
         raise ServiceUnavailable("The Bookings service is unavailable.")
     except requests.exceptions.Timeout:
@@ -106,6 +81,7 @@ def user_bookings(username):
 
     return jsonify(users_bookings)
 
+
 @app.route("/users/<username>/suggested", methods=['GET'])
 def user_suggested(username):
     """
@@ -116,5 +92,7 @@ def user_suggested(username):
     """
     raise NotImplementedError()
 
+
 if __name__ == "__main__":
-    app.run(port=helper.get_port('users'), host="0.0.0.0", debug=helper.get_debug())
+    app.run(port=helper.get_port('users'),
+            host="0.0.0.0", debug=helper.get_debug())
