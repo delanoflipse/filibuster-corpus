@@ -1,0 +1,138 @@
+services:
+  movies-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=movies
+    - PROXY_HOST=0.0.0.0:5001
+    - PROXY_TARGET=http://movies-real:5001
+    hostname: movies
+    ports:
+    - 5001:5001
+  movies-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-6
+        service: movies
+    hostname: movies-real
+    environment:
+    - OTEL_SERVICE_NAME=movies
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  showtimes-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=showtimes
+    - PROXY_HOST=0.0.0.0:5002
+    - PROXY_TARGET=http://showtimes-real:5002
+    hostname: showtimes
+    ports:
+    - 5002:5002
+  showtimes-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-6
+        service: showtimes
+    hostname: showtimes-real
+    environment:
+    - OTEL_SERVICE_NAME=showtimes
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  bookings-primary-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=bookings-primary
+    - PROXY_HOST=0.0.0.0:5003
+    - PROXY_TARGET=http://bookings-primary-real:5003
+    hostname: bookings-primary
+    ports:
+    - 5003:5003
+  bookings-primary-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-6
+        service: bookings-primary
+    hostname: bookings-primary-real
+    environment:
+    - OTEL_SERVICE_NAME=bookings-primary
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  bookings-secondary-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=bookings-secondary
+    - PROXY_HOST=0.0.0.0:5004
+    - PROXY_TARGET=http://bookings-secondary-real:5004
+    hostname: bookings-secondary
+    ports:
+    - 5004:5004
+  bookings-secondary-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-6
+        service: bookings-secondary
+    hostname: bookings-secondary-real
+    environment:
+    - OTEL_SERVICE_NAME=bookings-secondary
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  users-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=users
+    - PROXY_HOST=0.0.0.0:5000
+    - PROXY_TARGET=http://users-real:5000
+    hostname: users
+    ports:
+    - 5000:5000
+  users-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-6
+        service: users
+    hostname: users-real
+    environment:
+    - OTEL_SERVICE_NAME=users
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    ports:
+    - 16686:16686
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+  orchestrator:
+    image: fit-orchestrator:latest
+    ports:
+    - 6050:5000
+    environment:
+    - PROXY_LIST=movies:8050,showtimes:8050,bookings-primary:8050,bookings-secondary:8050,users:8050
