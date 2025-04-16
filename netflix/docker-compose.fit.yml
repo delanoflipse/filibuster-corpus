@@ -1,0 +1,263 @@
+services:
+  mobile-client-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=mobile-client
+    - PROXY_HOST=0.0.0.0:5000
+    - PROXY_TARGET=http://mobile-client-real:5000
+    hostname: mobile-client
+    ports:
+    - 5000:5000
+  mobile-client-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: mobile-client
+    hostname: mobile-client-real
+    environment:
+    - OTEL_SERVICE_NAME=mobile-client
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  api-gateway-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=api-gateway
+    - PROXY_HOST=0.0.0.0:5001
+    - PROXY_TARGET=http://api-gateway-real:5001
+    hostname: api-gateway
+    ports:
+    - 5001:5001
+  api-gateway-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: api-gateway
+    hostname: api-gateway-real
+    environment:
+    - OTEL_SERVICE_NAME=api-gateway
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  bookmarks-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=bookmarks
+    - PROXY_HOST=0.0.0.0:5003
+    - PROXY_TARGET=http://bookmarks-real:5003
+    hostname: bookmarks
+    ports:
+    - 5003:5003
+  bookmarks-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: bookmarks
+    hostname: bookmarks-real
+    environment:
+    - OTEL_SERVICE_NAME=bookmarks
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  telemetry-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=telemetry
+    - PROXY_HOST=0.0.0.0:5004
+    - PROXY_TARGET=http://telemetry-real:5004
+    hostname: telemetry
+    ports:
+    - 5004:5004
+  telemetry-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: telemetry
+    hostname: telemetry-real
+    environment:
+    - OTEL_SERVICE_NAME=telemetry
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  trending-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=trending
+    - PROXY_HOST=0.0.0.0:5005
+    - PROXY_TARGET=http://trending-real:5005
+    hostname: trending
+    ports:
+    - 5005:5005
+  trending-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: trending
+    hostname: trending-real
+    environment:
+    - OTEL_SERVICE_NAME=trending
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  my-list-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=my-list
+    - PROXY_HOST=0.0.0.0:5006
+    - PROXY_TARGET=http://my-list-real:5006
+    hostname: my-list
+    ports:
+    - 5006:5006
+  my-list-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: my-list
+    hostname: my-list-real
+    environment:
+    - OTEL_SERVICE_NAME=my-list
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  user-recommendations-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=user-recommendations
+    - PROXY_HOST=0.0.0.0:5007
+    - PROXY_TARGET=http://user-recommendations-real:5007
+    hostname: user-recommendations
+    ports:
+    - 5007:5007
+  user-recommendations-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: user-recommendations
+    hostname: user-recommendations-real
+    environment:
+    - OTEL_SERVICE_NAME=user-recommendations
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  global-recommendations-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=global-recommendations
+    - PROXY_HOST=0.0.0.0:5008
+    - PROXY_TARGET=http://global-recommendations-real:5008
+    hostname: global-recommendations
+    ports:
+    - 5008:5008
+  global-recommendations-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: global-recommendations
+    hostname: global-recommendations-real
+    environment:
+    - OTEL_SERVICE_NAME=global-recommendations
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  ratings-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=ratings
+    - PROXY_HOST=0.0.0.0:5009
+    - PROXY_TARGET=http://ratings-real:5009
+    hostname: ratings
+    ports:
+    - 5009:5009
+  ratings-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: ratings
+    hostname: ratings-real
+    environment:
+    - OTEL_SERVICE_NAME=ratings
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  user-profile-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=user-profile
+    - PROXY_HOST=0.0.0.0:5010
+    - PROXY_TARGET=http://user-profile-real:5010
+    hostname: user-profile
+    ports:
+    - 5010:5010
+  user-profile-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: netflix
+        service: user-profile
+    hostname: user-profile-real
+    environment:
+    - OTEL_SERVICE_NAME=user-profile
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG=1
+    - RUNNING_IN_DOCKER=1
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    ports:
+    - 16686:16686
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+  orchestrator:
+    image: fit-orchestrator:latest
+    ports:
+    - 6050:5000
+    environment:
+    - PROXY_LIST=mobile-client:8050,api-gateway:8050,bookmarks:8050,telemetry:8050,trending:8050,my-list:8050,user-recommendations:8050,global-recommendations:8050,ratings:8050,user-profile:8050
