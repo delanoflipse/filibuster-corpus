@@ -1,4 +1,3 @@
-import helper
 from flask import Flask, jsonify
 from werkzeug.exceptions import NotFound
 
@@ -11,6 +10,7 @@ app = Flask(__name__)
 examples_path = os.path.dirname(os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))))))
 sys.path.append(examples_path)
+import helper
 helper = helper.Helper("cinema-5")
 
 

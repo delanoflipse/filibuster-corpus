@@ -6,7 +6,8 @@ import ast
 
 class Helper:
     def __init__(self, example):
-        with open("/app/networking.json", "r") as f:
+        self.example_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), example)
+        with open("{}/networking.json".format(self.example_path), "r") as f:
             self.networking = json.load(f)
         self.instrumentation_info = None
 
