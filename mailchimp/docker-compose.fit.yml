@@ -1,0 +1,138 @@
+services:
+  load-balancer-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=load-balancer
+    - PROXY_HOST=0.0.0.0:5000
+    - PROXY_TARGET=http://load-balancer-real:5000
+    hostname: load-balancer
+    ports:
+    - 5000:5000
+  load-balancer-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: mailchimp
+        service: load-balancer
+    hostname: load-balancer-real
+    environment:
+    - OTEL_SERVICE_NAME=load-balancer
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+    - DB_READ_ONLY
+  app-server-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=app-server
+    - PROXY_HOST=0.0.0.0:5001
+    - PROXY_TARGET=http://app-server-real:5001
+    hostname: app-server
+    ports:
+    - 5001:5001
+  app-server-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: mailchimp
+        service: app-server
+    hostname: app-server-real
+    environment:
+    - OTEL_SERVICE_NAME=app-server
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+    - DB_READ_ONLY
+  requestmapper-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=requestmapper
+    - PROXY_HOST=0.0.0.0:5002
+    - PROXY_TARGET=http://requestmapper-real:5002
+    hostname: requestmapper
+    ports:
+    - 5002:5002
+  requestmapper-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: mailchimp
+        service: requestmapper
+    hostname: requestmapper-real
+    environment:
+    - OTEL_SERVICE_NAME=requestmapper
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+    - DB_READ_ONLY
+  db-primary-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=db-primary
+    - PROXY_HOST=0.0.0.0:5003
+    - PROXY_TARGET=http://db-primary-real:5003
+    hostname: db-primary
+    ports:
+    - 5003:5003
+  db-primary-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: mailchimp
+        service: db-primary
+    hostname: db-primary-real
+    environment:
+    - OTEL_SERVICE_NAME=db-primary
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+    - DB_READ_ONLY
+  db-secondary-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=db-secondary
+    - PROXY_HOST=0.0.0.0:5004
+    - PROXY_TARGET=http://db-secondary-real:5004
+    hostname: db-secondary
+    ports:
+    - 5004:5004
+  db-secondary-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: mailchimp
+        service: db-secondary
+    hostname: db-secondary-real
+    environment:
+    - OTEL_SERVICE_NAME=db-secondary
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+    - DB_READ_ONLY
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    ports:
+    - 16686:16686
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+  orchestrator:
+    image: fit-orchestrator:latest
+    ports:
+    - 6050:5000
+    environment:
+    - PROXY_LIST=load-balancer:8050,app-server:8050,requestmapper:8050,db-primary:8050,db-secondary:8050

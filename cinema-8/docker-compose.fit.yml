@@ -1,0 +1,61 @@
+services:
+  api-server-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=api-server
+    - PROXY_HOST=0.0.0.0:5001
+    - PROXY_TARGET=http://api-server-real:5001
+    hostname: api-server
+    ports:
+    - 5001:5001
+  api-server-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-8
+        service: api-server
+    hostname: api-server-real
+    environment:
+    - OTEL_SERVICE_NAME=api-server
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+  monolith-proxy:
+    image: fit-proxy:latest
+    environment:
+    - ORCHESTRATOR_HOST=orchestrator:5000
+    - CONTROLLER_PORT=8050
+    - SERVICE_NAME=monolith
+    - PROXY_HOST=0.0.0.0:5002
+    - PROXY_TARGET=http://monolith-real:5002
+    hostname: monolith
+    ports:
+    - 5002:5002
+  monolith-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: cinema-8
+        service: monolith
+    hostname: monolith-real
+    environment:
+    - OTEL_SERVICE_NAME=monolith
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    ports:
+    - 16686:16686
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+  orchestrator:
+    image: fit-orchestrator:latest
+    ports:
+    - 6050:5000
+    environment:
+    - PROXY_LIST=api-server:8050,monolith:8050
