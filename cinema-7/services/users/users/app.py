@@ -60,7 +60,9 @@ def user_bookings(username):
     # Check if bookings-primary is online
     success = True
     try:
-        requests.get("http://{}:{}/health-check".format(helper.resolve_requests_host('bookings-primary'), helper.get_port('bookings-primary')), timeout=helper.get_timeout('bookings-primary'))
+        res = requests.get("http://{}:{}/health-check".format(helper.resolve_requests_host('bookings-primary'), helper.get_port('bookings-primary')), timeout=helper.get_timeout('bookings-primary'))
+        if res.status_code != 200:
+            raise ServiceUnavailable("The Bookings service is malfunctioning.")
     except Exception:
         success = False
 
