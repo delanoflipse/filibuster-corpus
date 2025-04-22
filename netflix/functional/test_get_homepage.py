@@ -10,9 +10,16 @@ sys.path.append(examples_path)
 import helper 
 helper = helper.Helper("netflix")
 
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+s = requests.Session()
+retries = Retry(backoff_factor=1, status_forcelist=[], read=5, connect=5)
+adapter = HTTPAdapter(max_retries=retries)
+s.mount("http://", adapter)
+
 def test_functional_get_homepage():
     # response = requests.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")), timeout=helper.get_timeout("mobile-client"))
-    response = requests.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")))
+    response = s.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")))
     # if not was_fault_injected():
     #     assert response.status_code == 200
     #     homepage = response.json()
@@ -91,4 +98,7 @@ GLOBAL_REC = ['Inception', 'Shutter Island', 'The Dark Night']
 RATINGS = [{'movie': "Harry Potter and the Philosopher's Stone", 'rating': 5}, {'movie': 'Twilight', 'rating': 4}]
 
 if __name__ == "__main__":
-    test_functional_get_homepage()
+    try:
+        test_functional_get_homepage()
+    finally:
+        s.close()

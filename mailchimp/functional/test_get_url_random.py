@@ -9,9 +9,11 @@ sys.path.append(examples_path)
 import helper
 helper = helper.Helper("mailchimp")
 
+session = requests.Session()
+
 def test_functional_get_url_random():
     random_url = "randomurl"
-    response = requests.get("http://{}:{}/urls/{}".format(helper.resolve_requests_host('load-balancer'),
+    response = session.get("http://{}:{}/urls/{}".format(helper.resolve_requests_host('load-balancer'),
             helper.get_port('load-balancer'), random_url), timeout=helper.get_timeout('load-balancer'))
     if not was_fault_injected():
         assert response.status_code == 200
