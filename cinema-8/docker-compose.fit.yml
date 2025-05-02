@@ -1,9 +1,9 @@
 services:
   api-server-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=api-server
     - PROXY_HOST=0.0.0.0:5001
     - PROXY_TARGET=http://api-server-real:5001
@@ -24,10 +24,10 @@ services:
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
     - FLASK_DEBUG
   monolith-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=monolith
     - PROXY_HOST=0.0.0.0:5002
     - PROXY_TARGET=http://monolith-real:5002
@@ -53,9 +53,10 @@ services:
     - 16686:16686
     environment:
     - COLLECTOR_OTLP_ENABLED=true
-  orchestrator:
-    image: fit-orchestrator:latest
+  controller:
+    image: ${CONTROLLER_IMAGE:-dflipse/ds-fit-controller:latest}
     ports:
     - 6050:5000
     environment:
     - PROXY_LIST=api-server:8050,monolith:8050
+    - FLASK_DEBUG
