@@ -1,9 +1,9 @@
 services:
   audible-app-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=audible-app
     - PROXY_HOST=0.0.0.0:5000
     - PROXY_TARGET=http://audible-app-real:5000
@@ -25,10 +25,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   content-delivery-engine-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=content-delivery-engine
     - PROXY_HOST=0.0.0.0:5001
     - PROXY_TARGET=http://content-delivery-engine-real:5001
@@ -50,10 +50,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   content-delivery-service-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=content-delivery-service
     - PROXY_HOST=0.0.0.0:5002
     - PROXY_TARGET=http://content-delivery-service-real:5002
@@ -75,10 +75,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   audible-download-service-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=audible-download-service
     - PROXY_HOST=0.0.0.0:5003
     - PROXY_TARGET=http://audible-download-service-real:5003
@@ -100,10 +100,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   ownership-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=ownership
     - PROXY_HOST=0.0.0.0:5004
     - PROXY_TARGET=http://ownership-real:5004
@@ -125,10 +125,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   activation-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=activation
     - PROXY_HOST=0.0.0.0:5005
     - PROXY_TARGET=http://activation-real:5005
@@ -150,10 +150,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   stats-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=stats
     - PROXY_HOST=0.0.0.0:5006
     - PROXY_TARGET=http://stats-real:5006
@@ -175,10 +175,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   asset-metadata-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=asset-metadata
     - PROXY_HOST=0.0.0.0:5007
     - PROXY_TARGET=http://asset-metadata-real:5007
@@ -200,10 +200,10 @@ services:
     - FLASK_DEBUG
     - BAD_METADATA
   audio-assets-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=audio-assets
     - PROXY_HOST=0.0.0.0:5008
     - PROXY_TARGET=http://audio-assets-real:5008
@@ -230,9 +230,10 @@ services:
     - 16686:16686
     environment:
     - COLLECTOR_OTLP_ENABLED=true
-  orchestrator:
-    image: fit-orchestrator:latest
+  controller:
+    image: ${CONTROLLER_IMAGE:-dflipse/ds-fit-controller:latest}
     ports:
     - 6050:5000
     environment:
     - PROXY_LIST=audible-app:8050,content-delivery-engine:8050,content-delivery-service:8050,audible-download-service:8050,ownership:8050,activation:8050,stats:8050,asset-metadata:8050,audio-assets:8050
+    - FLASK_DEBUG

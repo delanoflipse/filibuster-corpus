@@ -1,9 +1,9 @@
 services:
   load-balancer-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=load-balancer
     - PROXY_HOST=0.0.0.0:5000
     - PROXY_TARGET=http://load-balancer-real:5000
@@ -25,10 +25,10 @@ services:
     - FLASK_DEBUG
     - DB_READ_ONLY
   app-server-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=app-server
     - PROXY_HOST=0.0.0.0:5001
     - PROXY_TARGET=http://app-server-real:5001
@@ -50,10 +50,10 @@ services:
     - FLASK_DEBUG
     - DB_READ_ONLY
   requestmapper-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=requestmapper
     - PROXY_HOST=0.0.0.0:5002
     - PROXY_TARGET=http://requestmapper-real:5002
@@ -75,10 +75,10 @@ services:
     - FLASK_DEBUG
     - DB_READ_ONLY
   db-primary-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=db-primary
     - PROXY_HOST=0.0.0.0:5003
     - PROXY_TARGET=http://db-primary-real:5003
@@ -100,10 +100,10 @@ services:
     - FLASK_DEBUG
     - DB_READ_ONLY
   db-secondary-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=db-secondary
     - PROXY_HOST=0.0.0.0:5004
     - PROXY_TARGET=http://db-secondary-real:5004
@@ -130,9 +130,10 @@ services:
     - 16686:16686
     environment:
     - COLLECTOR_OTLP_ENABLED=true
-  orchestrator:
-    image: fit-orchestrator:latest
+  controller:
+    image: ${CONTROLLER_IMAGE:-dflipse/ds-fit-controller:latest}
     ports:
     - 6050:5000
     environment:
     - PROXY_LIST=load-balancer:8050,app-server:8050,requestmapper:8050,db-primary:8050,db-secondary:8050
+    - FLASK_DEBUG

@@ -1,9 +1,9 @@
 services:
   mobile-client-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=mobile-client
     - PROXY_HOST=0.0.0.0:5000
     - PROXY_TARGET=http://mobile-client-real:5000
@@ -26,10 +26,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   api-gateway-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=api-gateway
     - PROXY_HOST=0.0.0.0:5001
     - PROXY_TARGET=http://api-gateway-real:5001
@@ -52,10 +52,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   bookmarks-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=bookmarks
     - PROXY_HOST=0.0.0.0:5003
     - PROXY_TARGET=http://bookmarks-real:5003
@@ -78,10 +78,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   telemetry-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=telemetry
     - PROXY_HOST=0.0.0.0:5004
     - PROXY_TARGET=http://telemetry-real:5004
@@ -104,10 +104,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   trending-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=trending
     - PROXY_HOST=0.0.0.0:5005
     - PROXY_TARGET=http://trending-real:5005
@@ -130,10 +130,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   my-list-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=my-list
     - PROXY_HOST=0.0.0.0:5006
     - PROXY_TARGET=http://my-list-real:5006
@@ -156,10 +156,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   user-recommendations-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=user-recommendations
     - PROXY_HOST=0.0.0.0:5007
     - PROXY_TARGET=http://user-recommendations-real:5007
@@ -182,10 +182,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   global-recommendations-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=global-recommendations
     - PROXY_HOST=0.0.0.0:5008
     - PROXY_TARGET=http://global-recommendations-real:5008
@@ -208,10 +208,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   ratings-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=ratings
     - PROXY_HOST=0.0.0.0:5009
     - PROXY_TARGET=http://ratings-real:5009
@@ -234,10 +234,10 @@ services:
     - NETFLIX_FAULTS
     - CHECK_TIMEOUTS
   user-profile-proxy:
-    image: fit-proxy:latest
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
     environment:
-    - ORCHESTRATOR_HOST=orchestrator:5000
-    - CONTROLLER_PORT=8050
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
     - SERVICE_NAME=user-profile
     - PROXY_HOST=0.0.0.0:5010
     - PROXY_TARGET=http://user-profile-real:5010
@@ -265,9 +265,10 @@ services:
     - 16686:16686
     environment:
     - COLLECTOR_OTLP_ENABLED=true
-  orchestrator:
-    image: fit-orchestrator:latest
+  controller:
+    image: ${CONTROLLER_IMAGE:-dflipse/ds-fit-controller:latest}
     ports:
     - 6050:5000
     environment:
     - PROXY_LIST=mobile-client:8050,api-gateway:8050,bookmarks:8050,telemetry:8050,trending:8050,my-list:8050,user-recommendations:8050,global-recommendations:8050,ratings:8050,user-profile:8050
+    - FLASK_DEBUG
