@@ -26,6 +26,7 @@ services:
         environment:
             - DEBUG
             - FLASK_DEBUG
+            - NETFLIX_FAULTS
         build:
             context: './services/api-gateway'
             dockerfile: './Dockerfile'
@@ -130,6 +131,7 @@ services:
         environment:
             - DEBUG
             - FLASK_DEBUG
+            - NETFLIX_FAULTS
         build:
             context: './services/user-profile'
             dockerfile: './Dockerfile'

@@ -61,7 +61,7 @@ def convert(url):
         if app_server_response.status_code == 500:
             return jsonify({"result": url})
         return jsonify(app_server_response.json())
-    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout, requests.exceptions.JSONDecodeError):
         raise ServiceUnavailable("The App Server is unavailable.")
 
 

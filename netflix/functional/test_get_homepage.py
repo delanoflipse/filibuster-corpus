@@ -10,74 +10,68 @@ sys.path.append(examples_path)
 import helper 
 helper = helper.Helper("netflix")
 
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 s = requests.Session()
-retries = Retry(backoff_factor=1, status_forcelist=[], read=5, connect=5)
-adapter = HTTPAdapter(max_retries=retries)
-s.mount("http://", adapter)
 
 def test_functional_get_homepage():
-    # response = requests.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")), timeout=helper.get_timeout("mobile-client"))
-    response = s.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")))
-    # if not was_fault_injected():
-    #     assert response.status_code == 200
-    #     homepage = response.json()
-    #     assert homepage["user-profile"] == USER_PROFILE
-    #     assert homepage["bookmarks"] == BOOKMARKS
-    #     assert homepage["my-list"] == MY_LIST
-    #     assert homepage["recommendations"] == USER_REC
-    #     assert homepage["ratings"] == RATINGS
-    # else:
-    #     # 503, API gateway down, unavailable, or server error.
-    #     if response.status_code == 503:
-    #         assert True
-    #     # 404, invalid user.
-    #     elif response.status_code == 404:
-    #         assert True
-    #     # 
-    #     elif response.status_code == 200:
-    #         homepage = response.json()
+    response = requests.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")), timeout=helper.get_timeout("mobile-client"))
+    if not was_fault_injected():
+        assert response.status_code == 200
+        homepage = response.json()
+        assert homepage["user-profile"] == USER_PROFILE
+        assert homepage["bookmarks"] == BOOKMARKS
+        assert homepage["my-list"] == MY_LIST
+        assert homepage["recommendations"] == USER_REC
+        assert homepage["ratings"] == RATINGS
+    else:
+        # 503, API gateway down, unavailable, or server error.
+        if response.status_code == 503:
+            assert True
+        # 404, invalid user.
+        elif response.status_code == 404:
+            assert True
+        # 
+        elif response.status_code == 200:
+            homepage = response.json()
             
-    #         if homepage["my-list"] == MY_LIST and \
-    #                 homepage["ratings"] == RATINGS and \
-    #                 homepage.get("recommendations", None) in [USER_REC] and \
-    #                 homepage.get("trending") in [TRENDING] and \
-    #                 homepage["user-profile"] == USER_PROFILE:
-    #             assert True
-    #         elif homepage["my-list"] == MY_LIST and \
-    #                 homepage["ratings"] == RATINGS and \
-    #                 homepage.get("recommendations", None) in [GLOBAL_REC] and \
-    #                 homepage.get("bookmarks", None) in [BOOKMARKS] and \
-    #                 homepage["user-profile"] == USER_PROFILE:
-    #             assert True
-    #         elif homepage["my-list"] == MY_LIST and \
-    #                 homepage["ratings"] == RATINGS and \
-    #                 homepage.get("recommendations", None) in [GLOBAL_REC] and \
-    #                 homepage["trending"] == TRENDING and \
-    #                 homepage["user-profile"] == USER_PROFILE:
-    #             assert True
-    #         elif homepage["my-list"] == MY_LIST and \
-    #                 homepage["ratings"] == RATINGS and \
-    #                 homepage.get("bookmarks", None) in [BOOKMARKS] and \
-    #                 homepage.get("trending", None) in [TRENDING] and \
-    #                 homepage["user-profile"] == USER_PROFILE:
-    #             assert True
-    #         elif homepage["my-list"] == MY_LIST and \
-    #                 homepage["ratings"] == RATINGS and \
-    #                 homepage.get("trending", None) in [TRENDING] and \
-    #                 homepage["user-profile"] == USER_PROFILE:
-    #             assert True
-    #         elif homepage["user-profile"] == USER_PROFILE and \
-    #                 homepage["bookmarks"] == BOOKMARKS and \
-    #                 homepage["my-list"] == MY_LIST and \
-    #                 homepage["recommendations"] == USER_REC and \
-    #                 homepage["ratings"] == RATINGS:
-    #             assert True
-    #         else:
-    #             assert False
-    #     else:
-    #         assert False
+            if homepage["my-list"] == MY_LIST and \
+                    homepage["ratings"] == RATINGS and \
+                    homepage.get("recommendations", None) in [USER_REC] and \
+                    homepage.get("trending") in [TRENDING] and \
+                    homepage["user-profile"] == USER_PROFILE:
+                assert True
+            elif homepage["my-list"] == MY_LIST and \
+                    homepage["ratings"] == RATINGS and \
+                    homepage.get("recommendations", None) in [GLOBAL_REC] and \
+                    homepage.get("bookmarks", None) in [BOOKMARKS] and \
+                    homepage["user-profile"] == USER_PROFILE:
+                assert True
+            elif homepage["my-list"] == MY_LIST and \
+                    homepage["ratings"] == RATINGS and \
+                    homepage.get("recommendations", None) in [GLOBAL_REC] and \
+                    homepage["trending"] == TRENDING and \
+                    homepage["user-profile"] == USER_PROFILE:
+                assert True
+            elif homepage["my-list"] == MY_LIST and \
+                    homepage["ratings"] == RATINGS and \
+                    homepage.get("bookmarks", None) in [BOOKMARKS] and \
+                    homepage.get("trending", None) in [TRENDING] and \
+                    homepage["user-profile"] == USER_PROFILE:
+                assert True
+            elif homepage["my-list"] == MY_LIST and \
+                    homepage["ratings"] == RATINGS and \
+                    homepage.get("trending", None) in [TRENDING] and \
+                    homepage["user-profile"] == USER_PROFILE:
+                assert True
+            elif homepage["user-profile"] == USER_PROFILE and \
+                    homepage["bookmarks"] == BOOKMARKS and \
+                    homepage["my-list"] == MY_LIST and \
+                    homepage["recommendations"] == USER_REC and \
+                    homepage["ratings"] == RATINGS:
+                assert True
+            else:
+                assert False
+        else:
+            assert False
 
 USER_PROFILE = {
     "id": "chris_rivers",
