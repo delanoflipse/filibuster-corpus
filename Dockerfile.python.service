@@ -1,0 +1,27 @@
+FROM python:3.10
+
+ARG benchmark
+ARG service
+
+RUN apt -y update && \
+    apt -y upgrade && \
+    apt install -y build-essential libssl-dev libffi-dev && \
+    apt install -y git
+
+WORKDIR /application/examples/${benchmark}/services/${service}
+
+COPY ./${benchmark}/base_requirements.txt /application/examples/base_requirements.txt
+
+RUN pip install -r /application/examples/base_requirements.txt
+RUN pip install opentelemetry-distro opentelemetry-exporter-otlp
+RUN opentelemetry-bootstrap -a install
+
+COPY ./${benchmark}/networking.json /application/examples/${benchmark}/networking.json
+COPY ./${benchmark}/services /application/examples/${benchmark}/services
+COPY ./helper.py /application/examples/helper.py
+
+ENTRYPOINT [ "opentelemetry-instrument" ]
+
+ENV RUNNING_IN_DOCKER=1 
+ENV SERVICE=${service}
+CMD python -m ${SERVICE}.app

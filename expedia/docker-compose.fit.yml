@@ -1,0 +1,86 @@
+services:
+  api-gateway-proxy:
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
+    environment:
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
+    - SERVICE_NAME=api-gateway
+    - PROXY_HOST=0.0.0.0:5000
+    - PROXY_TARGET=http://api-gateway-real:5000
+    hostname: api-gateway
+    ports:
+    - 5000:5000
+  api-gateway-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: expedia
+        service: api-gateway
+    hostname: api-gateway-real
+    environment:
+    - OTEL_SERVICE_NAME=api-gateway
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+  review-ml-proxy:
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
+    environment:
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
+    - SERVICE_NAME=review-ml
+    - PROXY_HOST=0.0.0.0:5001
+    - PROXY_TARGET=http://review-ml-real:5001
+    hostname: review-ml
+    ports:
+    - 5001:5001
+  review-ml-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: expedia
+        service: review-ml
+    hostname: review-ml-real
+    environment:
+    - OTEL_SERVICE_NAME=review-ml
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+  review-time-proxy:
+    image: ${PROXY_IMAGE:-dflipse/ds-fit-proxy:latest}
+    environment:
+    - CONTROLLER_HOST=controller:5000
+    - CONTROL_PORT=8050
+    - SERVICE_NAME=review-time
+    - PROXY_HOST=0.0.0.0:5002
+    - PROXY_TARGET=http://review-time-real:5002
+    hostname: review-time
+    ports:
+    - 5002:5002
+  review-time-real:
+    build:
+      context: ../
+      dockerfile: ./Dockerfile.python.service
+      args:
+        benchmark: expedia
+        service: review-time
+    hostname: review-time-real
+    environment:
+    - OTEL_SERVICE_NAME=review-time
+    - OTEL_TRACES_EXPORTER=otlp
+    - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+    - FLASK_DEBUG
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    ports:
+    - 16686:16686
+    environment:
+    - COLLECTOR_OTLP_ENABLED=true
+  controller:
+    image: ${CONTROLLER_IMAGE:-dflipse/ds-fit-controller:latest}
+    ports:
+    - 6050:5000
+    environment:
+    - PROXY_LIST=api-gateway:8050,review-ml:8050,review-time:8050
+    - FLASK_DEBUG
