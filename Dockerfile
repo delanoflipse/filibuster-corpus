@@ -23,10 +23,8 @@ COPY ./${example}/base_requirements.txt ./base_requirements.txt
 
 RUN pip install --upgrade setuptools
 RUN cd /tmp && \
-    echo v16 && \
-    git clone -b track-changes --single-branch https://github.com/delanoflipse/filibuster-comparison && \
-    cd filibuster-comparison && \
-    make install
+    git clone -b track-changes --single-branch https://github.com/delanoflipse/filibuster-comparison filibuster && \
+    pip install -e ./filibuster
 
 RUN pip install -r base_requirements.txt
 
