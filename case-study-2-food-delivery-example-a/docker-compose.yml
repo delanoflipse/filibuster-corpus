@@ -1,26 +1,44 @@
 version: '3'
 
 services:
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
+
     orders:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-2-food-delivery-example-a:orders
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
+        build:
             context: './services/orders/'
             dockerfile: './Dockerfile'
         ports:
             - "5000:5000"
     delivery_auth:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-2-food-delivery-example-a:delivery_auth
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
+        build:
             context: './services/delivery_auth/'
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
     takeout_auth:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/case-study-2-food-delivery-example-a:takeout_auth
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
+        build:
             context: './services/takeout_auth/'
             dockerfile: './Dockerfile'
         ports:
             - "5002:5002"
-
-

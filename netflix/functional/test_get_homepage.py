@@ -10,6 +10,8 @@ sys.path.append(examples_path)
 import helper 
 helper = helper.Helper("netflix")
 
+s = requests.Session()
+
 def test_functional_get_homepage():
     response = requests.get("{}/netflix/homepage/users/chris_rivers".format(helper.get_service_url("mobile-client")), timeout=helper.get_timeout("mobile-client"))
     if not was_fault_injected():
@@ -90,4 +92,7 @@ GLOBAL_REC = ['Inception', 'Shutter Island', 'The Dark Night']
 RATINGS = [{'movie': "Harry Potter and the Philosopher's Stone", 'rating': 5}, {'movie': 'Twilight', 'rating': 4}]
 
 if __name__ == "__main__":
-    test_functional_get_homepage()
+    try:
+        test_functional_get_homepage()
+    finally:
+        s.close()

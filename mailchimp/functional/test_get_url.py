@@ -9,9 +9,13 @@ import helper
 helper = helper.Helper("mailchimp")
 
 from filibuster.assertions import was_fault_injected
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+s = requests.Session()
 
 def test_functional_get_url():
-    response = requests.get("http://{}:{}/urls/prettyurl".format(helper.resolve_requests_host(
+    response = s.get("http://{}:{}/urls/prettyurl".format(helper.resolve_requests_host(
         'load-balancer'), helper.get_port('load-balancer')), timeout=helper.get_timeout('load-balancer'))
     if not was_fault_injected():
         assert response.status_code == 200
@@ -39,6 +43,9 @@ def test_functional_get_url():
         else:
             assert False
 
-
 if __name__ == '__main__':
-    test_functional_get_url()
+    try:
+        test_functional_get_url()
+    finally:
+        s.close()
+    

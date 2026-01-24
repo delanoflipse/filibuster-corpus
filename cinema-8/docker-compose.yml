@@ -1,16 +1,31 @@
 version: '3'
 
 services:
+    jaeger:
+        image: jaegertracing/all-in-one:latest
+        ports:
+            - "16686:16686"
+
     api-server:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-8:api-server
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
+        build:
             context: './services/api-server/'
             dockerfile: './Dockerfile'
         ports:
             - "5001:5001"
     monolith:
         image: ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/cinema-8:monolith
-        build: 
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        environment:
+            - DEBUG
+            - FLASK_DEBUG
+        build:
             context: './services/monolith'
             dockerfile: './Dockerfile'
         ports:

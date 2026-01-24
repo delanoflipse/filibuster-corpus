@@ -66,17 +66,16 @@ refresh-aws-credentials:
         echo "Not refreshing credentials, running inside AWS."; \
     fi
 
-docker-build: refresh-aws-credentials generate-protos
+docker-build: generate-protos
 	docker build --build-arg example=$(example) --build-arg disable_instrumentation=$(DISABLE_INSTRUMENTATION) --build-arg disable_server_communication=$(DISABLE_SERVER_COMMUNICATION) --build-arg run_counterexample=$(RUN_COUNTEREXAMPLE) -t $(example):configuration -f ../Dockerfile ..
-	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose build
+	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker compose build
 	docker pull jaegertracing/all-in-one:1.6
 
 docker-start:
-	DISABLE_INSTRUMENTATION=$(DISABLE_INSTRUMENTATION) make docker-build
-	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose up -d
+	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker compose up -d
 
 docker-stop:
-	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker-compose stop
+	AWS_ACCOUNT_ID=$(AWS_ACCOUNT_ID) REGION=$(REGION) docker compose stop
 
 define docker-connect-to-network-target
   	docker-connect-to-network:: ; docker network connect exampleToJaeger cinema_$(1)_1
@@ -96,7 +95,7 @@ generate-protos:
 	@echo "Generating protocol buffer files..."
 	if [ -d "protos/" ]; then \
 		mkdir -p protos/out; \
-		python3 -m grpc_tools.protoc -I./protos --python_out=protos/out --grpc_python_out=protos/out ./protos/*.proto; \
+		python -m grpc_tools.protoc -I./protos --python_out=protos/out --grpc_python_out=protos/out ./protos/*.proto; \
 		make install-protos; \
 	fi
 

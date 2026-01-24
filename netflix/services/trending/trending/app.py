@@ -24,15 +24,15 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 trace.set_tracer_provider(TracerProvider())
 
-jaeger_exporter = jaeger.JaegerSpanExporter(
-    service_name="trending",
-    agent_host_name=helper.jaeger_agent_host_name(),
-    agent_port=helper.jaeger_agent_port()
-)
+# jaeger_exporter = jaeger.JaegerSpanExporter(
+#     service_name="trending",
+#     agent_host_name=helper.jaeger_agent_host_name(),
+#     agent_port=helper.jaeger_agent_port()
+# )
 
-trace.get_tracer_provider().add_span_processor(
-    BatchExportSpanProcessor(jaeger_exporter)
-)
+# trace.get_tracer_provider().add_span_processor(
+#     BatchExportSpanProcessor(jaeger_exporter)
+# )
 
 tracer = trace.get_tracer(__name__)
 
